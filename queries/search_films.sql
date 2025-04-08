@@ -1,6 +1,6 @@
 SELECT id, title, description, actors, genre, release_year
 FROM films
-WHERE search_vector @@ plainto_tsquery('english'
-    , $1)
-    LIMIT $2
-OFFSET $3;
+WHERE search_vector @@ plainto_tsquery($1
+    , $2)
+    LIMIT $3
+OFFSET $4;
