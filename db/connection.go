@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"postgre/config"
 )
 
-var Conn *pgx.Conn
+var Pool *pgxpool.Pool
 
-// Connect establishes connection to the PostgreSQL database.
 func Connect() {
 	connStr := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s",
@@ -23,17 +22,14 @@ func Connect() {
 	)
 
 	var err error
-	Conn, err = pgx.Connect(context.Background(), connStr)
+	Pool, err = pgxpool.New(context.Background(), connStr)
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		log.Fatalf("Failed to create connection pool: %v", err)
 	}
 }
 
-// Close safely closes the database connection.
 func Close() {
-	if Conn != nil {
-		if err := Conn.Close(context.Background()); err != nil {
-			log.Printf("Error closing DB connection: %v", err)
-		}
+	if Pool != nil {
+		Pool.Close()
 	}
 }
